@@ -1,0 +1,9 @@
+*~
+OrthancStorage/
+__pycache__/
+config.json
+venv/
+
+# Those files are automatically downloaded
+models/*
+

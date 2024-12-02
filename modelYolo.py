@@ -1,0 +1,96 @@
+import download
+import os
+import numpy as np
+import torch
+import torch.nn as nn
+import torchvision
+from torchvision.transforms import functional as F
+from torchvision.transforms import Resize, Normalize
+
+from ultralytics import YOLO 
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+MODELS_DIR = os.path.join(SCRIPT_DIR, 'models')
+
+os.makedirs(MODELS_DIR, exist_ok=True)
+
+# download.get(os.path.join(MODELS_DIR, 'yolov11_weights.pth'),
+#              'link',
+#              size='size',
+#              checksum='md5?')
+
+
+class ResizeBetter:
+    def __init__(self, min_size=1750):
+        self.min_size = min_size
+
+    def __call__(self, image):
+        return Resize((self.min_size, self.min_size), interpolation=F.InterpolationMode.BILINEAR)(image)
+
+
+def load_yolo_model(weights_path):
+    # Load YOLOv11 model using the ultralytics library
+    model = YOLO(weights_path)
+    model.eval()  # Ensure the model is in evaluation mode
+    print(f"YOLOv11 model loaded from {weights_path}")
+    return model
+
+
+def dicom_to_tensor(dicom, min_size):
+    assert len(dicom.pixel_array.shape) == 2
+
+    # Normalize pixel values to 0-255
+    im_array = np.stack((dicom.pixel_array,) * 3, axis=-1)
+    image_tensor = torch.tensor(im_array.astype(np.float32).transpose(2, 0, 1))
+
+    # Resize and normalize
+    image_tensor = ResizeBetter(min_size)(image_tensor)
+
+    # std = torch.std(image_tensor)
+    # mean = torch.mean(image_tensor)
+    # image_tensor = torch.sub(image_tensor, mean)
+    # image_tensor = torch.div(image_tensor, std)
+
+    assert len(image_tensor.shape) == 3
+    # torchvision.utils.save_image(image_tensor, 'test1.png')
+
+    return image_tensor
+
+
+def apply_model_to_dicom(model, dicom, rescale_boxes=True):
+    image_tensor = dicom_to_tensor(dicom, 640)
+    image_tensor = image_tensor.unsqueeze(0)  # Add batch dimension
+
+    # Run inference with YOLOv11
+    image_tensor*= (1.0/image_tensor.max())
+    # torchvision.utils.save_image(image_tensor, 'test2.png')
+    results = model(image_tensor)
+
+    # Process the output
+    detections = results[0].boxes.xyxy.cpu().numpy()  # Get bounding boxes
+    confidences = results[0].boxes.conf.cpu().numpy()  # Get confidence scores
+    labels = results[0].boxes.cls.cpu().numpy()  # Get class labels
+
+    if rescale_boxes:
+        original_width = dicom.pixel_array.shape[1]
+        original_height = dicom.pixel_array.shape[0]
+        resized_width = image_tensor.shape[3]
+        resized_height = image_tensor.shape[2]
+
+        scale_x = original_width / resized_width
+        scale_y = original_height / resized_height
+
+        # Scale boxes back to the original image size
+        detections[:, [0, 2]] *= scale_x
+        detections[:, [1, 3]] *= scale_y
+
+    return {
+        'boxes': detections,
+        'confidences': confidences,
+        'labels': labels
+    }
+
+
+def load_yolo_v11():
+    weights_path = os.path.join(MODELS_DIR, 'best.pt')
+    model = load_yolo_model(weights_path)
+    return {'eval': model, 'input_size': 1024}  # Adjust input size as needed
