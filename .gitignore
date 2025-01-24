@@ -1,7 +1,7 @@
 *~
 OrthancStorage/
 __pycache__/
-config.json
+orthanc.json
 venv/
 
 models/*

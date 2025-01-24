@@ -20,7 +20,7 @@ os.makedirs(MODELS_DIR, exist_ok=True)
 
 
 class ResizeBetter:
-    def __init__(self, min_size=1750):
+    def __init__(self, min_size):
         self.min_size = min_size
 
     def __call__(self, image):

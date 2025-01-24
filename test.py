@@ -7,7 +7,7 @@ import io
 
 
 print("Hello World")
-model = modelYolo.load_yolo_model("models/best.pt")
+model = modelYolo.load_yolo_model("models/best(1).pt")
 # model = model.load_retina_net()
 f = io.BytesIO(open("sample-images/sample.dcm", "rb").read())
 dicom = pydicom.dcmread(io.BytesIO(f.read()))
