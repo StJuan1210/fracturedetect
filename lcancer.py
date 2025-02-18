@@ -14,7 +14,7 @@ if venv != None:
 ##
 
 STONE_VERSION = '2024-08-31-StoneWebViewer-DICOM-SR'
-VIEWER_PREFIX = '/fracture-viewer/'
+VIEWER_PREFIX = '/lcancer-viewer/'
 
 import os
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -65,25 +65,26 @@ orthanc.RegisterRestCallback('%s(.*)' % VIEWER_PREFIX, serve_stone_web_viewer)
 ## Load the deep learning model
 ##
 
+
+import modelYolo
+import dicom_sr
 import highdicom
 import io
 import os
 import pydicom
 
 sys.path.append(os.path.join(SCRIPT_DIR, '..'))
-import modelYolo
-import dicom_sr
 
 
-orthanc.LogWarning('Loading the Yolo model for Fracture detection')
-my_yolo_model = modelYolo.load_yolo_model("models/fracture.pt")
+orthanc.LogWarning('Loading the Yolo model for Lung Cancer detection')
+my_yolo_model = modelYolo.load_yolo_model("models/lcancer.pt")
 
 
 ##
 ## Install the Orthanc Explorer extension
 ##
 
-with open(os.path.join(SCRIPT_DIR, 'OrthancExplorer_fracture.js'), 'r') as f:
+with open(os.path.join(SCRIPT_DIR, 'OrthancExplorer_lcancer.js'), 'r') as f:
     orthanc.ExtendOrthancExplorer(f.read())
 
 def execute_inference(output, uri, **request):
@@ -108,4 +109,4 @@ def execute_inference(output, uri, **request):
 
             output.AnswerBuffer(orthanc.RestApiPost('/instances', content), 'application/json')
 
-orthanc.RegisterRestCallback('/fracture-apply', execute_inference)
+orthanc.RegisterRestCallback('/lcancer-apply', execute_inference)
