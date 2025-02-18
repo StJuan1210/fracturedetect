@@ -7,8 +7,7 @@ import io
 
 
 print("Hello World")
-model = modelYolo.load_yolo_model("models/best(1).pt")
-# model = model.load_retina_net()
+model = modelYolo.load_yolo_model("models/bestv11s.pt")
 f = io.BytesIO(open("sample-images/sample.dcm", "rb").read())
 dicom = pydicom.dcmread(io.BytesIO(f.read()))
 result = dicom_sr.applyYolo(model, dicom, minimum_score=0.2)

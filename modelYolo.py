@@ -6,7 +6,7 @@ import torch.nn as nn
 import torchvision
 from torchvision.transforms import functional as F
 from torchvision.transforms import Resize, Normalize
-
+from PIL import Image
 from ultralytics import YOLO 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 MODELS_DIR = os.path.join(SCRIPT_DIR, 'models')
@@ -19,12 +19,40 @@ os.makedirs(MODELS_DIR, exist_ok=True)
 #              checksum='md5?')
 
 
+# class ResizeBetter:
+#     def __init__(self, min_size):
+#         self.min_size = min_size
+
+#     def __call__(self, image):
+#         return Resize((self.min_size, self.min_size), 
+#                         interpolation=F.InterpolationMode.BILINEAR)(image)
+
 class ResizeBetter:
     def __init__(self, min_size):
         self.min_size = min_size
 
     def __call__(self, image):
-        return Resize((self.min_size, self.min_size), interpolation=F.InterpolationMode.BILINEAR)(image)
+        # Get original size
+        _, h, w = image.shape # C, H, W
+        # Determine scale factor
+        scale = self.min_size / max(w, h)
+        new_w, new_h = int(w * scale), int(h * scale)
+
+        # Resize while maintaining aspect ratio
+        image = F.resize(image, (new_h, new_w), interpolation=F.InterpolationMode.BILINEAR)
+
+        # Compute padding
+        pad_w = (self.min_size - new_w) // 2
+        pad_h = (self.min_size - new_h) // 2
+
+        # Apply padding (left, top, right, bottom)
+        image = F.pad(image, 
+                      (pad_w, 
+                       pad_h, 
+                       self.min_size - new_w - pad_w, 
+                       self.min_size - new_h - pad_h))
+
+        return image
 
 
 def load_yolo_model(weights_path):
@@ -44,12 +72,6 @@ def dicom_to_tensor(dicom, min_size):
 
     # Resize and normalize
     image_tensor = ResizeBetter(min_size)(image_tensor)
-
-    # std = torch.std(image_tensor)
-    # mean = torch.mean(image_tensor)
-    # image_tensor = torch.sub(image_tensor, mean)
-    # image_tensor = torch.div(image_tensor, std)
-
     assert len(image_tensor.shape) == 3
     # torchvision.utils.save_image(image_tensor, 'test1.png')
 
@@ -63,34 +85,52 @@ def apply_model_to_dicom(model, dicom, rescale_boxes=True):
     # Run inference with YOLOv11
     image_tensor*= (1.0/image_tensor.max())
     # torchvision.utils.save_image(image_tensor, 'test2.png')
-    results = model(image_tensor)
+    results = model.predict(image_tensor,device='cpu')
 
     # Process the output
     detections = results[0].boxes.xyxy.cpu().numpy()  # Get bounding boxes
     confidences = results[0].boxes.conf.cpu().numpy()  # Get confidence scores
     labels = results[0].boxes.cls.cpu().numpy()  # Get class labels
 
+    # if rescale_boxes:
+    #     original_width = dicom.pixel_array.shape[1]
+    #     original_height = dicom.pixel_array.shape[0]
+    #     resized_width = image_tensor.shape[3]
+    #     resized_height = image_tensor.shape[2]
+
+    #     scale_x = original_width / resized_width
+    #     scale_y = original_height / resized_height
+
+    #     # Scale boxes back to the original image size
+    #     detections[:, [0, 2]] *= scale_x
+    #     detections[:, [1, 3]] *= scale_y
     if rescale_boxes:
         original_width = dicom.pixel_array.shape[1]
         original_height = dicom.pixel_array.shape[0]
-        resized_width = image_tensor.shape[3]
-        resized_height = image_tensor.shape[2]
+        padded_width = image_tensor.shape[3]  # Should be 640
+        padded_height = image_tensor.shape[2]  # Should be 640
 
+        # Calculate original resized image size before padding
+        scale = min(640 / original_width, 640 / original_height)
+        resized_width = int(original_width * scale)
+        resized_height = int(original_height * scale)
+
+        # Compute padding added
+        pad_w = (padded_width - resized_width) // 2
+        pad_h = (padded_height - resized_height) // 2
+
+        # Adjust bounding boxes to remove padding
+        detections[:, [0, 2]] -= pad_w
+        detections[:, [1, 3]] -= pad_h
+
+        # Scale boxes back to original image size
         scale_x = original_width / resized_width
         scale_y = original_height / resized_height
 
-        # Scale boxes back to the original image size
         detections[:, [0, 2]] *= scale_x
         detections[:, [1, 3]] *= scale_y
-
     return {
         'boxes': detections,
         'confidences': confidences,
         'labels': labels
     }
-
-
-def load_yolo_v11():
-    weights_path = os.path.join(MODELS_DIR, 'best.pt')
-    model = load_yolo_model(weights_path)
-    return {'eval': model, 'input_size': 1024}  # Adjust input size as needed

@@ -76,7 +76,7 @@ import modelYolo
 import dicom_sr
 
 orthanc.LogWarning('Loading the Yolo model for Fracture detection')
-my_yolo_model = modelYolo.load_yolo_model("models/best(1).pt")
+my_yolo_model = modelYolo.load_yolo_model("models/bestv11s.pt")
 
 
 ##
