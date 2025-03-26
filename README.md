@@ -28,7 +28,7 @@
 
 ### Notes
 Models by default have to be in ```.pt``` format. To use ONNX or TensorRT for device specific speedups:
-In ```./venv/lib/python3.11/site-packages/sahi/models/ultralytics.py```
+In ```./.venv/lib/python3.11/site-packages/sahi/models/ultralytics.py```
 Change: 
 ```python
 try:
