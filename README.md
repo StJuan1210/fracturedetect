@@ -1,4 +1,4 @@
-# Fracture and Lung Cancer detection Plugin for orthanc
+# Fracture and Lung Cancer detection Plugin for Orthanc
 
 
 ## Steps to add plugin
@@ -10,6 +10,11 @@
     python3 -m venv .venv
     source ./.venv/bin/activate
     pip install -r requirements.txt
+    ```
+    If you use uv:
+    ```bash
+    uv venv --python 3.11.11
+    uv sync
     ```
 3. Edit the Orthanc config
    ```json
@@ -28,7 +33,9 @@
 
 ### Notes
 Models by default have to be in ```.pt``` format. To use ONNX or TensorRT for device specific speedups:
+
 In ```./.venv/lib/python3.11/site-packages/sahi/models/ultralytics.py```
+
 Change: 
 ```python
 try:

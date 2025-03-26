@@ -1,9 +1,7 @@
 import os
 import re
-from marimo import image
 import numpy as np
 import torch
-import torch.nn as nn
 from torchvision.transforms import functional as F
 from ultralytics import YOLO
 from sahi.predict import get_sliced_prediction
@@ -43,7 +41,7 @@ def load_sahi_model(weights_path):
     model_path=weights_path,
     confidence_threshold=0.25,
     device='0'
-    )
+        )
     return detection_model
 
 def dicom_to_tensor(dicom):
