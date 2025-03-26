@@ -32,7 +32,6 @@ import highdicom
 import pydicom
 import modelYolo
 import dicom_sr
-import download
 # Load Stone Web Viewer
 stone_assets = zipfile.ZipFile(os.path.join(VIEWER_DIR, f'{STONE_VERSION}.zip'))
 
@@ -63,8 +62,8 @@ orthanc.RegisterRestCallback('/lcancer-viewer/(.*)', serve_stone_web_viewer)
 
 # Load models
 orthanc.LogWarning('Loading the Yolo models for detection')
-fracture_model = modelYolo.load_yolo_model("models/fracture.pt")
-lcancer_model = modelYolo.load_yolo_model("models/lcancer.pt")
+fracture_model = modelYolo.load_sahi_model("models/fracture.pt")
+lcancer_model = modelYolo.load_sahi_model("models/lcancer.pt")
 
 # Extend Orthanc Explorer
 

@@ -7,3 +7,7 @@ venv/
 models/*
 *.so
 Orthanc
+Datasets/*
+.vscode/
+predictions*.json
+metrics.csv

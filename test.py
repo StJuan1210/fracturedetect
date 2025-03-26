@@ -12,7 +12,7 @@ f = io.BytesIO(open("sample-images/samplelcancer.dcm", "rb").read())
 dicom = pydicom.dcmread(io.BytesIO(f.read()))
 result = dicom_sr.applyYolo(model, dicom, minimum_score=0.2)
 print(result)
-cv2.imwrite("Image.png", dicom.pixel_array)
+# cv2.imwrite("Image.png", dicom.pixel_array)
 # with io.BytesIO() as f:   
 #     pydicom.dcmwrite(f, result)
 #     f.seek(0)
