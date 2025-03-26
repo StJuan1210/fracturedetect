@@ -4,7 +4,7 @@ __pycache__/
 orthanc.json
 .venv/
 uv.lock
-models/*
+*.cache
 *.so
 Orthanc
 Datasets/*
