@@ -2,8 +2,8 @@
 OrthancStorage/
 __pycache__/
 orthanc.json
-venv/
-
+.venv/
+uv.lock
 models/*
 *.so
 Orthanc
