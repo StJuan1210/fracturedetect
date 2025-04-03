@@ -11,3 +11,4 @@ Datasets/*
 .vscode/
 predictions*.json
 metrics.csv
+sample-images/*

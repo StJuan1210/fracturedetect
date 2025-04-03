@@ -31,6 +31,7 @@
         //assumes python version is 3.11
     },
    ```
+4. Create a folder called viewer and place the zipfile of stone web viewer binaries there. Plugin works with 2024-08-31 version of the viewer
 
 ### Notes
 Models by default have to be in ```.pt``` format. To use ONNX or TensorRT for device specific speedups:
