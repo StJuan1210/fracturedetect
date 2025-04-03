@@ -40,7 +40,7 @@ def load_sahi_model(weights_path):
     model_type='yolov11', 
     model_path=weights_path,
     confidence_threshold=0.25,
-    device='0'
+    device='0' #or cpu
         )
     return detection_model
 

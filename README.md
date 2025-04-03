@@ -23,6 +23,7 @@
     ],
     "Python" : {
         "Path" : "./merge.py"
+        // replace with fracture.py or lcancer.py if you want only one of them
 
     },
     "Fracture" : {

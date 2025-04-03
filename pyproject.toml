@@ -115,7 +115,7 @@ dependencies = [
     "soupsieve==2.6",
     "stack-data==0.6.3",
     "sympy==1.13.1",
-    "tensorrt",
+    "tensorrt==10.8.0.43",
     "tensorrt-cu12==10.8.0.43",
     "tensorrt-cu12-bindings==10.8.0.43",
     "tensorrt-cu12-libs==10.8.0.43",
@@ -143,6 +143,3 @@ dependencies = [
     "websocket-client==1.8.0",
     "widgetsnbextension==4.0.13",
 ]
-
-[tool.uv.sources]
-tensorrt = { path = "../../../../../Downloads/TensorRT-10.8.0.43/python/tensorrt-10.8.0.43-cp311-none-linux_x86_64.whl" }
