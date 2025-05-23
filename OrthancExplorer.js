@@ -58,7 +58,7 @@ $('#instance').live('pageshow', function() {
     dataType: 'json',
     cache: false,
     success: function(tags) {
-      if (tags.Modality == 'MG') {
+      if (tags.Modality == 'XR' || tags.Modality == 'MG') {
         fractureButton.show();
       }
     }
@@ -169,7 +169,7 @@ $('#instance').live('pageshow', function() {
     dataType: 'json',
     cache: false,
     success: function(tags) {
-      if (tags.Modality == 'MG') {
+      if (tags.Modality == 'CT' || tags.Modality == 'MG') {
         lcancerButton.show();
       }
     }

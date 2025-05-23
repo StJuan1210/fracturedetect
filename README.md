@@ -32,6 +32,7 @@
     },
    ```
 4. Create a folder called viewer and place the zipfile of stone web viewer binaries there. Plugin works with 2024-08-31 version of the viewer
+ 
 
 ### Notes
 Models by default have to be in ```.pt``` format. To use ONNX or TensorRT for device specific speedups:
@@ -57,3 +58,5 @@ try:
 except Exception as e:
     raise TypeError("model_path is not a valid Ultralytics model path: ", e)
 ```
+
+You should be able to load any YOLOv8 or v11 model in place of the fracture and lung  cancer detection ones.
