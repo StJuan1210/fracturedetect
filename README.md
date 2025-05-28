@@ -33,7 +33,8 @@
    ```
 4. Create a folder called viewer and place the zipfile of stone web viewer binaries there. Plugin works with 2024-08-31 version of the viewer
  
-
+## Docker version
+The plugin integrated with Orthanc is available [here](https://github.com/StJuan1210/fracturedetect-docker) as a docker container with instruction to run
 ### Notes
 Models by default have to be in ```.pt``` format. To use ONNX or TensorRT for device specific speedups:
 
