@@ -64,6 +64,9 @@ orthanc.RegisterRestCallback('/lcancer-viewer/(.*)', serve_stone_web_viewer)
 orthanc.LogWarning('Loading the Yolo models for detection')
 fracture_model = modelYolo.load_sahi_model("models/fracture.pt")
 lcancer_model = modelYolo.load_sahi_model("models/lcancer.pt")
+# Uncomment the following lines if you want to use the resize method
+# fracture_model = modelYolo.load_yolo_model("models/fracture.pt")
+# lcancer_model = modelYolo.load_yolo_model("models/lcancer.pt")
 
 # Extend Orthanc Explorer
 

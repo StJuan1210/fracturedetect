@@ -38,6 +38,8 @@ def CreateProbabilityOfCancer(probability):
 def applyYolo(yolo_model, dicom, minimum_score=0.2, title='Orthanc Deep Learning for Fracture Detection'):
     start = time.time()
     result = modelYolo.apply_model_to_dicom_sahi(yolo_model, dicom)
+    # Uncomment the following line if you want to use the resize method
+    # result = modelYolo.apply_model_to_dicom(yolo_model, dicom)
     end = time.time()
     print('Time: %.02f seconds' % (end - start))
 
